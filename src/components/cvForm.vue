@@ -6,8 +6,9 @@
                   mode="out-in"
                   name="home">
 			<form class="animated fadeInLeft text-uppercase px-5 py-4"
-      @submit.prevent="submitForm">
+      @submit.prevent="submitForm" v-show="showForm">
       <h4 class="text-center">Contact form</h4>
+      <small class="text-muted">This form demonstration send axios POST request to Test Server</small>
         <div class="progress my-3">
           <div class="progress-bar" :style="progressWidth"></div>
         </div>
@@ -25,13 +26,13 @@
                     @input="onInput(index, $event.target.value)">
           </div>
           <div class="form-group col-12 text-center">
-            <button class="btn btn-pink text-uppercase" :disabled="done<inputs.length">Submit</button>
+            <button class="btn btn-pink text-uppercase"  :disabled="done<inputs.length">Submit</button>
           </div>
         </div>
         </form>
       </transition>       
 	   </div>
-    <!--div class="col-12 col-md-7 mb-3 animated slideInUp">    
+    <div class="col-12 col-md-7 mb-3 animated slideInUp">    
       <gmap-map
       :center="center"      
       :zoom="5"
@@ -45,10 +46,9 @@
         @click="center=m.position"
       ></gmap-marker>
     </gmap-map>
-    </div-->
+    </div>
     </div>    
 </template>
-
 <script>
 import axios from 'axios';
 export default {
@@ -58,29 +58,20 @@ export default {
       {
             name: 'Company',
             value: '',
-            pattern: /^[a-zA-Zа-яА-Я]{3,20}$/,
-            status: false
+            pattern: /^[a-zA-Zа-яА-Я\s]{3,20}$/
           },
           {
             name: 'Phone',
             value: '',
-            pattern: /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/,
-            status: false
+            pattern: /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/
           },
           {
             name: 'Email',
             value: '',
-            pattern: /^[^@]+@[^@.]+\.[^@]+$/,
-            status: false
-          },
-          {
-            name: 'Answer',
-            value: '',
-            pattern: /^[a-zA-Zа-яА-Я]{10,200}$/,
-            status: false
+            pattern: /^[^@]+@[^@.]+\.[^@]+$/
           }
     ],
-    showForm: false,
+    showForm: true,
     controls: [],
     center: { 
       lat: 49.1335781,
@@ -404,11 +395,16 @@ export default {
         control.activated = true;
       },
       submitForm(){
-        axios.post('././send.php', {
-        text: this.inputs.value
-        }).then(response => {
-          this.response = JSON.stringify(response, null, 2)
-        })    
+        var vm = axios.post('http://www.mocky.io/v2/5b51e89e2e00006d065c1b3f',
+              this.inputs).then(function(response) {
+        console.log(response); 
+        alert('Запрос ушел на сервер!'+ JSON.stringify(response, null, 4));
+        location.reload()        
+    })
+    .catch(function(error) {
+        console.log(error);
+        alert('Ошибка отправки запроса!');
+    });        
         }     
     }  
 }
